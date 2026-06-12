@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rapports annuels - LIAS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div th:replace="~{layout :: nav}"></div>
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-chart-bar me-2"></i>Rapports d'activité annuels</h2>
+        <form th:action="@{/rapports/generer}" method="post" class="d-flex gap-2" sec:authorize="hasRole('DIRECTEUR')">
+            <input type="number" name="annee" class="form-control" th:value="${anneeCourante}" min="2000" max="2100" required>
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-plus me-1"></i>Générer
+            </button>
+        </form>
+    </div>
+
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+        <i class="fas fa-check-circle me-2"></i><span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+        <i class="fas fa-exclamation-circle me-2"></i><span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="card shadow">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-dark">
+                <tr>
+                    <th>Année</th>
+                    <th>Événements</th>
+                    <th>Publications</th>
+                    <th>Membres actifs</th>
+                    <th>Adhésions</th>
+                    <th>Mandats</th>
+                    <th>Date génération</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="r : ${rapports}">
+                    <td><strong th:text="${r.annee}">2024</strong></td>
+                    <td th:text="${r.nbEvenements}">0</td>
+                    <td th:text="${r.nbPublications}">0</td>
+                    <td th:text="${r.nbMembresActifs}">0</td>
+                    <td th:text="${r.nbDemandesAcceptees}">0</td>
+                    <td th:text="${r.nbNouveauxMandats}">0</td>
+                    <td th:text="${r.dateGeneration != null} ? ${#temporals.format(r.dateGeneration, 'dd/MM/yyyy HH:mm')} : '-'">-</td>
+                    <td>
+                        <a th:href="@{/rapports/{annee}(annee=${r.annee})}" class="btn btn-sm btn-outline-primary me-1">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        <form sec:authorize="hasRole('DIRECTEUR')"
+                              th:action="@{/rapports/{id}/supprimer(id=${r.id})}" method="post" class="d-inline"
+                              onsubmit="return confirm('Supprimer ce rapport ?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div th:if="${#lists.isEmpty(rapports)}" class="text-center text-muted py-5">
+            <i class="fas fa-file-alt fa-3x mb-3"></i>
+            <p>Aucun rapport généré.</p>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

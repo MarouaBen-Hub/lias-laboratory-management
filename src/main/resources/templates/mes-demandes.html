@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suivre mes demandes - LIAS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div th:replace="~{layout :: nav}"></div>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white py-3">
+                    <h4 class="mb-0"><i class="fas fa-search me-2"></i>Suivi de vos demandes d'adhésion</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form th:action="@{/demandes/suivi}" method="get" class="row g-2 mb-4">
+                        <div class="col-sm-9">
+                            <input type="email" name="email" class="form-control" th:value="${emailRecherche}" required placeholder="Saisissez l'email utilisé lors de votre demande">
+                        </div>
+                        <div class="col-sm-3">
+                            <button type="submit" class="btn btn-primary w-100"><i class="fas fa-search me-1"></i>Rechercher</button>
+                        </div>
+                    </form>
+
+                    <div th:if="${demandes != null}">
+                        <h5 class="mb-3">Résultats pour <span th:text="${emailRecherche}" class="text-primary"></span></h5>
+                        
+                        <div class="table-responsive" th:if="${not #lists.isEmpty(demandes)}">
+                            <table class="table table-hover align-middle">
+                                <thead>
+                                <tr>
+                                    <th>Date soumission</th>
+                                    <th>Nom Complet</th>
+                                    <th>Statut</th>
+                                    <th>Date décision</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="d : ${demandes}">
+                                    <td th:text="${#temporals.format(d.dateSoumission, 'dd/MM/yyyy HH:mm')}">01/01/2024</td>
+                                    <td th:text="${d.prenom + ' ' + d.nom}">Nom</td>
+                                    <td>
+                                        <span class="badge"
+                                              th:class="${d.statut.name() == 'EN_ATTENTE'} ? 'bg-warning text-dark' :
+                                                       (${d.statut.name() == 'ACCEPTEE'} ? 'bg-success' : 'bg-danger')"
+                                              th:text="${d.statut}">STATUT</span>
+                                    </td>
+                                    <td th:text="${d.dateDecision != null} ? ${#temporals.format(d.dateDecision, 'dd/MM/yyyy HH:mm')} : '-'">-</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div th:if="${#lists.isEmpty(demandes)}" class="alert alert-info text-center py-4">
+                            <i class="fas fa-info-circle fa-2x mb-2"></i>
+                            <p class="mb-0">Aucune demande trouvée pour cet email.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-start mt-3">
+                        <a href="/demandes/adherer" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>Nouvelle demande
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

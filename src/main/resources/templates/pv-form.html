@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rédiger PV - LIAS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div th:replace="~{layout :: nav}"></div>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/reunions}">Réunions</a></li>
+                    <li class="breadcrumb-item active">Rédiger PV</li>
+                </ol>
+            </nav>
+
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0"><i class="fas fa-pen me-2"></i>Rédiger le procès-verbal</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info mb-4">
+                        <strong>Réunion:</strong> <span th:text="${reunion.titre}">Titre</span><br>
+                        <small class="text-muted" th:text="${#temporals.format(reunion.dateDebut, 'dd/MM/yyyy à HH:mm')}">01/01/2024</small>
+                    </div>
+
+                    <form th:action="@{/pv/reunion/{id}/rediger(id=${reunionId})}" method="post" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label class="form-label">Résumé de la réunion *</label>
+                            <textarea name="resume" class="form-control" rows="8" placeholder="Déroulement de la réunion, points abordés..." required></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Décisions prises *</label>
+                            <textarea name="decisions" class="form-control" rows="6" placeholder="Liste des décisions, votes, conclusions..." required></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Document PV (PDF, scan...)</label>
+                            <input type="file" name="fichier" class="form-control" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg">
+                            <small class="text-muted">Optionnel: joindre le PV signé scanné</small>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a th:href="@{/reunions/{id}(id=${reunionId})}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>Annuler
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save me-1"></i>Enregistrer le PV
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matériel - LIAS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .stock-ok { border-left: 4px solid #198754; }
+        .stock-faible { border-left: 4px solid #ffc107; }
+        .stock-epuise { border-left: 4px solid #dc3545; }
+    </style>
+</head>
+<body class="bg-light">
+<div th:replace="~{layout :: nav}"></div>
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-boxes me-2"></i>Gestion du matériel</h2>
+        <div>
+            <a sec:authorize="hasAnyRole('DIRECTEUR', 'VICE_DIRECTEUR')"
+               th:href="@{/materiel/nouveau}" class="btn btn-primary me-2">
+                <i class="fas fa-plus me-1"></i>Ajouter matériel
+            </a>
+            <a th:href="@{/besoins}" sec:authorize="hasAnyRole('DIRECTEUR', 'VICE_DIRECTEUR')" class="btn btn-outline-primary me-2">
+                <i class="fas fa-clipboard-list me-1"></i>Besoins
+            </a>
+            <a th:href="@{/besoins/mes-besoins}" class="btn btn-outline-secondary">
+                <i class="fas fa-hand-holding me-1"></i>Mes besoins
+            </a>
+        </div>
+    </div>
+
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+        <i class="fas fa-check-circle me-2"></i><span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+        <i class="fas fa-exclamation-circle me-2"></i><span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Filtres -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form th:action="@{/materiel}" method="get" class="d-flex gap-2">
+                <div class="form-check d-flex align-items-center">
+                    <input type="checkbox" name="disponible" value="oui" class="form-check-input" id="dispoCheck" th:checked="${disponibleFiltre == 'oui'}">
+                    <label class="form-check-label ms-2" for="dispoCheck">Disponible uniquement</label>
+                </div>
+                <button type="submit" class="btn btn-outline-primary">Filtrer</button>
+                <a th:href="@{/materiel}" class="btn btn-outline-secondary">Tout voir</a>
+            </form>
+        </div>
+    </div>
+
+    <!-- Liste -->
+    <div class="row">
+        <div th:each="m : ${materiels}" class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 shadow-sm"
+                 th:classappend="${m.quantiteDisponible == 0} ? 'stock-epuise' : (${m.quantiteDisponible < m.quantiteTotale * 0.2} ? 'stock-faible' : 'stock-ok')">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title mb-0" th:text="${m.nom}">Nom</h5>
+                        <span class="badge"
+                              th:class="${m.quantiteDisponible == 0} ? 'bg-danger' : (${m.quantiteDisponible < m.quantiteTotale * 0.2} ? 'bg-warning text-dark' : 'bg-success')"
+                              th:text="${m.quantiteDisponible + '/' + m.quantiteTotale}">0/10</span>
+                    </div>
+                    <p class="card-text text-muted small" th:text="${#strings.abbreviate(m.description, 100)}">Description...</p>
+                    <div class="mb-2">
+                        <small class="text-muted"><i class="fas fa-tag me-1"></i><span th:text="${m.categorie}">Catégorie</span></small>
+                    </div>
+                    <div class="mb-2">
+                        <small class="text-muted"><i class="fas fa-truck me-1"></i><span th:text="${m.fournisseur}">Fournisseur</span></small>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted"><i class="fas fa-calendar me-1"></i>Arrivage: <span th:text="${m.dateArrivage}">01/01/2024</span></small>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <a th:href="@{/materiel/{id}(id=${m.id})}" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-eye me-1"></i>Détail
+                        </a>
+                        <div sec:authorize="hasAnyRole('DIRECTEUR', 'VICE_DIRECTEUR')">
+                            <a th:href="@{/materiel/{id}/modifier(id=${m.id})}" class="btn btn-sm btn-outline-warning me-1">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <form th:action="@{/materiel/{id}/supprimer(id=${m.id})}" method="post" class="d-inline"
+                                  onsubmit="return confirm('Supprimer ce matériel ?');">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${#lists.isEmpty(materiels)}" class="text-center text-muted py-5">
+        <i class="fas fa-box-open fa-3x mb-3"></i>
+        <p>Aucun matériel enregistré.</p>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

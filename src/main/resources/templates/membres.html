@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Membres - LIAS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root { --primary: #1a5276; --secondary: #2874a6; }
+        .navbar { background: var(--primary); }
+        .member-card { transition: transform 0.2s; border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .member-card:hover { transform: translateY(-3px); }
+        .avatar { width: 80px; height: 80px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto; overflow: hidden; }
+        .avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .statut-permanent { background: #27ae60 !important; }
+        .statut-doctorant { background: #3498db !important; }
+        .statut-associe { background: #f39c12 !important; }
+        .statut-retraite { background: #95a5a6 !important; }
+        .statut-ancien { background: #e74c3c !important; }
+        footer { background: var(--primary) !important; }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="/"><i class="fas fa-flask me-2"></i>LIAS</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link active" href="/membres">Membres</a></li>
+                <li class="nav-item"><a class="nav-link" href="/equipes">Équipes</a></li>
+                <li class="nav-item"><a class="nav-link" href="/publications">Publications</a></li>
+                <li class="nav-item"><a class="nav-link" href="/evenements">Événements</a></li>
+            </ul>
+            <ul class="navbar-nav">
+                <li class="nav-item" sec:authorize="!isAuthenticated()">
+                    <a class="nav-link" href="/login"><i class="fas fa-sign-in-alt me-1"></i>Connexion</a>
+                </li>
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <a class="nav-link" href="/logout"><i class="fas fa-sign-out-alt me-1"></i>Déconnexion</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-5">
+    <h2 class="mb-4"><i class="fas fa-users me-2"></i>Membres du Laboratoire</h2>
+
+    <div class="row mb-4 g-2">
+        <div class="col-md-3">
+            <select class="form-select" id="filtre-statut">
+                <option value="">Tous les statuts</option>
+                <option value="permanent">Permanent</option>
+                <option value="doctorant">Doctorant</option>
+                <option value="associe">Associé</option>
+                <option value="retraite">Retraité</option>
+                <option value="ancien">Ancien</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" id="filtre-equipe">
+                <option value="">Toutes les équipes</option>
+                <option value="isdiac">ISDIAC</option>
+                <option value="sima">SIMA</option>
+                <option value="sdtic">SDTIC</option>
+                <option value="ilias">ILIAS</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <input type="text" class="form-control" id="recherche-nom" placeholder="Rechercher par nom...">
+        </div>
+        <div class="col-md-3">
+            <button class="btn btn-outline-secondary w-100" id="btn-reset"><i class="fas fa-undo me-1"></i>Réinitialiser</button>
+        </div>
+    </div>
+
+    <div id="resultat-compteur" class="mb-3 text-muted"></div>
+
+    <div class="row g-4" id="membres-container">
+        <div class="col-md-4 membre-item" th:each="membre : ${membres}"
+             th:data-statut="${membre.statut != null} ? ${#strings.toLowerCase(membre.statut)} : ''"
+             th:data-equipes="${membre.equipes != null and !membre.equipes.isEmpty()} ? ${#strings.arrayJoin(membre.equipes.![#strings.toLowerCase(nom)], ',')} : ''"
+             th:data-nom="${#strings.toLowerCase((membre.prenom ?: '') + ' ' + (membre.nom ?: ''))}">
+            <div class="card member-card h-100">
+                <div class="card-body text-center">
+                    <div class="avatar mb-3">
+                        <img th:if="${membre.photoUrl != null and membre.photoUrl != ''}" th:src="${membre.photoUrl}" alt="Photo de profil">
+                        <i th:unless="${membre.photoUrl != null and membre.photoUrl != ''}" class="fas fa-user"></i>
+                    </div>
+                    <h5 class="card-title" th:text="${membre.prenom} + ' ' + ${membre.nom}">Prénom Nom</h5>
+                    <p class="text-muted mb-2" th:text="${membre.biographie}">Biographie</p>
+                    <span class="badge" th:classappend="${membre.statut != null} ? 'statut-' + ${#strings.toLowerCase(membre.statut)} : ''" th:text="${membre.statut}">Statut</span>
+                    <p class="small text-muted mt-2" th:if="${membre.equipes != null and !membre.equipes.isEmpty()}">
+                        <i class="fas fa-users me-1"></i>
+                        <span th:each="eq, iter : ${membre.equipes}" th:text="${eq.nom} + (${iter.last} ? '' : ', ')">Équipe</span>
+                    </p>
+                    <a th:href="@{/membres/{id}(id=${membre.id})}" class="btn btn-outline-primary btn-sm mt-2">
+                        <i class="fas fa-eye me-1"></i>Voir profil
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="text-white py-3 mt-5">
+    <div class="container text-center">
+        <p class="mb-0">&copy; 2026 LIAS Laboratory</p>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    (function() {
+        const filtreStatut = document.getElementById('filtre-statut');
+        const filtreEquipe = document.getElementById('filtre-equipe');
+        const rechercheNom = document.getElementById('recherche-nom');
+        const btnReset = document.getElementById('btn-reset');
+        const compteur = document.getElementById('resultat-compteur');
+        const items = document.querySelectorAll('.membre-item');
+
+        function filtrer() {
+            const statut = filtreStatut.value.toLowerCase();
+            const equipe = filtreEquipe.value.toLowerCase();
+            const nom = rechercheNom.value.toLowerCase().trim();
+            let visible = 0;
+
+            items.forEach(item => {
+                const itemStatut = (item.dataset.statut || '').toLowerCase();
+                const itemEquipes = (item.dataset.equipes || '').toLowerCase();
+                const itemNom = (item.dataset.nom || '').toLowerCase();
+
+                const matchStatut = !statut || itemStatut === statut;
+                const matchEquipe = !equipe || itemEquipes.includes(equipe);
+                const matchNom = !nom || itemNom.includes(nom);
+
+                const afficher = matchStatut && matchEquipe && matchNom;
+                item.style.display = afficher ? '' : 'none';
+                if (afficher) visible++;
+            });
+
+            compteur.textContent = visible + ' membre' + (visible > 1 ? 's' : '') + ' trouvé' + (visible > 1 ? 's' : '');
+        }
+
+        filtreStatut.addEventListener('change', filtrer);
+        filtreEquipe.addEventListener('change', filtrer);
+        rechercheNom.addEventListener('input', filtrer);
+
+        btnReset.addEventListener('click', function() {
+            filtreStatut.value = '';
+            filtreEquipe.value = '';
+            rechercheNom.value = '';
+            filtrer();
+        });
+
+        filtrer();
+    })();
+</script>
+</body>
+</html>

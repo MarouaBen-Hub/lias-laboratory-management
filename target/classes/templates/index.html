@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratoire LIAS - Accueil</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a5276;
+            --secondary: #2874a6;
+            --accent: #f39c12;
+        }
+        body { font-family: 'Segoe UI', sans-serif; }
+        .navbar { background: var(--primary); }
+        .hero { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 80px 0; }
+        .card-icon { font-size: 3rem; color: var(--primary); }
+        .stat-card { border-left: 4px solid var(--accent); }
+        .footer { background: var(--primary); color: white; padding: 30px 0; margin-top: 50px; }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #1a5276;">
+    <div class="container">
+        <a class="navbar-brand" href="/"><i class="fas fa-flask me-2"></i>LIAS</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link" href="/membres">Membres</a></li>
+                <li class="nav-item"><a class="nav-link" href="/publications">Publications</a></li>
+                <li class="nav-item"><a class="nav-link" href="/evenements">Événements</a></li>
+                <li class="nav-item"><a class="nav-link" href="/documents">Documents</a></li>
+                <li class="nav-item"><a class="nav-link" href="/materiel">Matériel</a></li>
+                <li class="nav-item"><a class="nav-link" href="/reunions">Réunions</a></li>
+            </ul>
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="/login"><i class="fas fa-sign-in-alt me-1"></i>Connexion</a></li>
+                <li class="nav-item"><a class="nav-link" href="/demandes/adherer"><i class="fas fa-user-plus me-1"></i>Rejoindre</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+    <section class="hero">
+        <div class="container text-center">
+            <h1 class="display-4 fw-bold mb-4">Laboratoire LIAS</h1>
+            <p class="lead mb-4">Laboratoire d'Informatique et d'Automatique des Systèmes</p>
+            <p class="mb-4">Faculté des Sciences Ben M'Sik – Casablanca</p>
+            <a href="/membres" class="btn btn-light btn-lg me-2"><i class="fas fa-users me-2"></i>Nos Membres</a>
+            <a href="/publications" class="btn btn-outline-light btn-lg"><i class="fas fa-book me-2"></i>Publications</a>
+        </div>
+    </section>
+
+    <div class="container my-5">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-users card-icon mb-3"></i>
+                        <h5 class="card-title">Membres</h5>
+                        <p class="card-text">Gestion complète des membres permanents, associés, doctorants et retraités.</p>
+                        <a href="/membres" class="btn btn-primary">Explorer</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-book card-icon mb-3"></i>
+                        <h5 class="card-title">Publications</h5>
+                        <p class="card-text">Consultation et gestion des publications scientifiques par auteur, année et équipe.</p>
+                        <a href="/publications" class="btn btn-primary">Explorer</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-calendar-alt card-icon mb-3"></i>
+                        <h5 class="card-title">Événements</h5>
+                        <p class="card-text">Conférences, séminaires et workshops organisés par le laboratoire.</p>
+                        <a href="/evenements" class="btn btn-primary">Explorer</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mb-5">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card stat-card shadow-sm">
+                    <div class="card-body">
+                        <h6 class="text-muted">Membres Actifs</h6>
+                        <h3 class="fw-bold" id="stat-membres">-</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card shadow-sm">
+                    <div class="card-body">
+                        <h6 class="text-muted">Publications 2024</h6>
+                        <h3 class="fw-bold" id="stat-publications">-</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card shadow-sm">
+                    <div class="card-body">
+                        <h6 class="text-muted">Événements</h6>
+                        <h3 class="fw-bold" id="stat-evenements">-</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card shadow-sm">
+                    <div class="card-body">
+                        <h6 class="text-muted">Équipes</h6>
+                        <h3 class="fw-bold" id="stat-equipes">-</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container text-center">
+            <p class="mb-0">&copy; 2024 Laboratoire LIAS - Faculté des Sciences Ben M'Sik</p>
+            <p class="mb-0 small">Master Data Science & Big Data 2025-2026</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Load stats
+        async function loadStats() {
+            try {
+                const [membres, pubs, events, equipes] = await Promise.all([
+                    fetch('/api/membres/actifs').then(r => r.json()),
+                    fetch('/api/publications/annee/2024').then(r => r.json()),
+                    fetch('/api/evenements').then(r => r.json()),
+                    fetch('/api/membres').then(r => r.json())
+                ]);
+                document.getElementById('stat-membres').textContent = membres.length;
+                document.getElementById('stat-publications').textContent = pubs.length;
+                document.getElementById('stat-evenements').textContent = events.length;
+                document.getElementById('stat-equipes').textContent = '3';
+            } catch(e) { console.log('Stats loading...'); }
+        }
+        loadStats();
+    </script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Rapport ' + ${rapport.annee}">Rapport</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div th:replace="~{layout :: nav}"></div>
+
+<div class="container py-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a th:href="@{/rapports}">Rapports</a></li>
+            <li class="breadcrumb-item active" th:text="${rapport.annee}">2024</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>Rapport d'activité <span th:text="${rapport.annee}">2024</span>
+                    </h4>
+                    <span class="badge bg-light text-primary" th:if="${rapport.genere}">Généré</span>
+                </div>
+                <div class="card-body">
+                    <pre th:text="${rapport.contenu}" style="white-space: pre-wrap; font-family: inherit;">Contenu...</pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Informations</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2"><strong>Généré le:</strong> <span th:text="${#temporals.format(rapport.dateGeneration, 'dd/MM/yyyy à HH:mm')}">01/01/2024</span></p>
+                    <p class="mb-2"><strong>Par:</strong> <span th:text="${rapport.generateur != null ? rapport.generateur.nomComplet : '-'}">Nom</span></p>
+                    <hr>
+                    <div class="row text-center">
+                        <div class="col-6 mb-3">
+                            <h3 class="text-primary mb-0" th:text="${rapport.nbEvenements}">0</h3>
+                            <small class="text-muted">Événements</small>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <h3 class="text-success mb-0" th:text="${rapport.nbPublications}">0</h3>
+                            <small class="text-muted">Publications</small>
+                        </div>
+                        <div class="col-6">
+                            <h3 class="text-info mb-0" th:text="${rapport.nbMembresActifs}">0</h3>
+                            <small class="text-muted">Membres</small>
+                        </div>
+                        <div class="col-6">
+                            <h3 class="text-warning mb-0" th:text="${rapport.nbDemandesAcceptees}">0</h3>
+                            <small class="text-muted">Adhésions</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                Ce rapport constitue une condition pour l'attribution du budget annuel.
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

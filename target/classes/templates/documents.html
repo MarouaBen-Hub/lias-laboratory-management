@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documents - LIAS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .doc-card { transition: transform 0.2s; }
+        .doc-card:hover { transform: translateY(-3px); }
+        .type-financement { border-left: 4px solid #0d6efd; }
+        .type-programme { border-left: 4px solid #6610f2; }
+        .type-attestation { border-left: 4px solid #20c997; }
+        .type-rapport { border-left: 4px solid #fd7e14; }
+        .type-admin { border-left: 4px solid #6c757d; }
+        .type-pv { border-left: 4px solid #dc3545; }
+        .type-convention { border-left: 4px solid #198754; }
+        .type-autre { border-left: 4px solid #adb5bd; }
+    </style>
+</head>
+<body class="bg-light">
+<div th:replace="~{layout :: nav}"></div>
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-folder-open me-2"></i>Archives documentaires</h2>
+        <a sec:authorize="isAuthenticated()" th:href="@{/documents/upload}" class="btn btn-primary">
+            <i class="fas fa-upload me-1"></i>Uploader un document
+        </a>
+    </div>
+
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+        <i class="fas fa-check-circle me-2"></i><span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+        <i class="fas fa-exclamation-circle me-2"></i><span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Filtres -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form th:action="@{/documents}" method="get" class="row g-3">
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        <input type="text" name="recherche" class="form-control" placeholder="Rechercher..." th:value="${recherche}">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select name="type" class="form-select">
+                        <option value="">Tous les types</option>
+                        <option th:each="t : ${types}" th:value="${t}" th:text="${t}" th:selected="${typeFiltre == t}">Type</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select name="evenementId" class="form-select">
+                        <option value="">Tous les événements</option>
+                        <option th:each="e : ${evenements}" th:value="${e.id}" th:text="${#strings.abbreviate(e.titre, 40)}" th:selected="${evenementFiltre == e.id}">Événement</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-outline-primary w-100">Filtrer</button>
+                </div>
+            </form>
+            <div class="mt-2">
+                <a th:href="@{/documents}" class="btn btn-sm btn-outline-secondary">Réinitialiser</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Liste -->
+    <div class="row">
+        <div th:each="doc : ${documents}" class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 shadow-sm doc-card"
+                 th:classappend="' type-' + ${#strings.toLowerCase(#strings.replace(doc.type.name(), '_', '-'))}">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="badge bg-secondary" th:text="${doc.type}">TYPE</span>
+                        <small class="text-muted" th:text="${#temporals.format(doc.dateUpload, 'dd/MM/yyyy')}">01/01/2024</small>
+                    </div>
+
+                    <h5 class="card-title text-truncate" th:text="${doc.nomOriginal}">Nom fichier</h5>
+                    <p class="card-text text-muted small" th:text="${doc.description} ?: 'Aucune description'">Description...</p>
+
+                    <div class="mb-2">
+                        <small class="text-muted">
+                            <i class="fas fa-user me-1"></i><span th:text="${doc.uploader.nomComplet}">Uploader</span>
+                        </small>
+                    </div>
+
+                    <div class="mb-3" th:if="${doc.evenement != null}">
+                        <small class="text-muted">
+                            <i class="fas fa-calendar-alt me-1"></i>Événement:
+                            <a th:href="@{/evenements/{id}(id=${doc.evenement.id})}" th:text="${#strings.abbreviate(doc.evenement.titre, 30)}">Titre</a>
+                        </small>
+                    </div>
+
+                    <div class="mb-3">
+                        <small class="text-muted">
+                            <i class="fas fa-weight-hanging me-1"></i>
+                            <span th:text="${#numbers.formatDecimal(doc.tailleOctets / 1024.0, 1, 1)}">0</span> KB
+                        </small>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <a th:href="@{/documents/{id}/visualiser(id=${doc.id})}" target="_blank" class="btn btn-sm btn-outline-info me-1">
+                                <i class="fas fa-eye"></i> Voir
+                            </a>
+                            <a th:href="@{/documents/{id}/telecharger(id=${doc.id})}" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-download"></i> Télécharger
+                            </a>
+                        </div>
+                        <form th:if="${#authentication.name == doc.uploader.email or #authorization.expression('hasRole(''DIRECTEUR'')')}"
+                              th:action="@{/documents/{id}/supprimer(id=${doc.id})}"
+                              method="post" class="d-inline"
+                              onsubmit="return confirm('Supprimer ce document ?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${#lists.isEmpty(documents)}" class="text-center text-muted py-5">
+        <i class="fas fa-folder-open fa-3x mb-3"></i>
+        <p>Aucun document trouvé.</p>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

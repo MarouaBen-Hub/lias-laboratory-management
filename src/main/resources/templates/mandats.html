@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gouvernance - Mandats LIAS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .mandat-actif { border-left: 4px solid #198754; }
+        .mandat-termine { border-left: 4px solid #6c757d; }
+    </style>
+</head>
+<body class="bg-light">
+<div th:replace="~{layout :: nav}"></div>
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-crown me-2"></i>Gestion des mandats</h2>
+        <span class="badge bg-success fs-6" th:if="${directeurActuel != null}">
+                <i class="fas fa-user-tie me-1"></i>Directeur: <span th:text="${directeurActuel.nomComplet}">Nom</span>
+            </span>
+    </div>
+
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+        <i class="fas fa-check-circle me-2"></i><span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${warning}" class="alert alert-warning alert-dismissible fade show">
+        <i class="fas fa-exclamation-triangle me-2"></i><span th:text="${warning}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+        <i class="fas fa-exclamation-circle me-2"></i><span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Formulaire de nomination -->
+    <div class="card mb-4 shadow" sec:authorize="hasRole('DIRECTEUR')">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Nouvelle nomination</h5>
+        </div>
+        <div class="card-body">
+            <form th:action="@{/mandats/nommer}" method="post" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Membre *</label>
+                    <select name="membreId" class="form-select" required>
+                        <option value="">-- Choisir --</option>
+                        <option th:each="m : ${membres}" th:value="${m.id}" th:text="${m.nomComplet + ' (' + m.statut + ')'}">Nom</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Rôle *</label>
+                    <select name="role" class="form-select" required>
+                        <option value="">-- Choisir --</option>
+                        <option th:each="r : ${roles}" th:value="${r}" th:text="${r}">Rôle</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Date de début *</label>
+                    <input type="date" name="dateDebut" class="form-control" required>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-check me-1"></i>Nommer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Filtres -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form th:action="@{/mandats}" method="get" class="d-flex gap-2">
+                <select name="role" class="form-select w-auto">
+                    <option value="">Tous les rôles</option>
+                    <option th:each="r : ${roles}" th:value="${r}" th:text="${r}" th:selected="${roleFiltre == r}">Rôle</option>
+                </select>
+                <div class="form-check d-flex align-items-center">
+                    <input type="checkbox" name="actifs" value="true" class="form-check-input" id="actifsCheck" th:checked="${actifsFiltre}">
+                    <label class="form-check-label ms-2" for="actifsCheck">Actifs uniquement</label>
+                </div>
+                <button type="submit" class="btn btn-outline-primary">Filtrer</button>
+                <a th:href="@{/mandats}" class="btn btn-outline-secondary">Réinitialiser</a>
+            </form>
+        </div>
+    </div>
+
+    <!-- Liste des mandats -->
+    <div class="card shadow">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-dark">
+                <tr>
+                    <th>Membre</th>
+                    <th>Rôle</th>
+                    <th>Début</th>
+                    <th>Fin</th>
+                    <th>Statut</th>
+                    <th sec:authorize="hasRole('DIRECTEUR')">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="m : ${mandats}"
+                    th:classappend="${m.actif} ? 'mandat-actif' : 'mandat-termine'">
+                    <td>
+                        <a th:href="@{/membres/{id}(id=${m.membre.id})}" th:text="${m.membre.nomComplet}">Nom</a>
+                    </td>
+                    <td><span class="badge bg-info text-dark" th:text="${m.role}">RÔLE</span></td>
+                    <td th:text="${#temporals.format(m.dateDebut, 'dd/MM/yyyy')}">01/01/2024</td>
+                    <td th:text="${m.dateFin != null} ? ${#temporals.format(m.dateFin, 'dd/MM/yyyy')} : '-'">-</td>
+                    <td>
+                                <span class="badge" th:class="${m.actif} ? 'bg-success' : 'bg-secondary'"
+                                      th:text="${m.actif} ? 'Actif' : 'Terminé'">STATUT</span>
+                    </td>
+                    <td sec:authorize="hasRole('DIRECTEUR')">
+                        <form th:if="${m.actif}"
+                              th:action="@{/mandats/{id}/clore(id=${m.id})}"
+                              method="post" class="d-inline">
+                            <input type="date" name="dateFin" class="form-control form-control-sm d-inline w-auto" required>
+                            <button type="submit" class="btn btn-sm btn-warning" title="Clore le mandat">
+                                <i class="fas fa-lock"></i>
+                            </button>
+                        </form>
+                        <form th:action="@{/mandats/{id}/supprimer(id=${m.id})}"
+                              method="post" class="d-inline ms-1"
+                              onsubmit="return confirm('Supprimer ce mandat ?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div th:if="${#lists.isEmpty(mandats)}" class="text-center text-muted py-5">
+            <i class="fas fa-crown fa-3x mb-3"></i>
+            <p>Aucun mandat trouvé.</p>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
