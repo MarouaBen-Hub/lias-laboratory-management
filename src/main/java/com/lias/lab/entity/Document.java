@@ -3,21 +3,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import jakarta.validation.constraints.NotBlank;
-import com.lias.lab.entity.enums.TypeDocument;
-import jakarta.persistence.*;
-import lombok.*;
 
-import java.time.LocalDateTime;
-@Entity
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@Entity
-@Table(name = "document")
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
