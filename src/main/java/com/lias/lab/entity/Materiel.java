@@ -8,7 +8,11 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-
+@Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "materiel")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
