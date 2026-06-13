@@ -8,7 +8,11 @@ import com.lias.lab.entity.enums.RoleMembre;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
-
+@Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "mandat")
 @Getter
