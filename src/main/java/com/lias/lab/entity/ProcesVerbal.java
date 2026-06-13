@@ -8,8 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Publication {
-}
+
 public class ProcesVerbal {
 
     @Id
