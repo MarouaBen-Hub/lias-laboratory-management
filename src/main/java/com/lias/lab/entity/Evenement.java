@@ -3,24 +3,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import jakarta.validation.constraints.NotBlank;
-import com.lias.lab.entity.enums.StatutEvenement;
-import com.lias.lab.entity.enums.TypeEvenement;
-import jakarta.persistence.*;
-import lombok.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
-@Entity
+
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@Entity
-@Table(name = "evenement")
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
