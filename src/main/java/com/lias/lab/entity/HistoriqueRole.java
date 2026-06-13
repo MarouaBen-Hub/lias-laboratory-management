@@ -7,7 +7,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
-
+@Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "historique_roles")
 @Data
