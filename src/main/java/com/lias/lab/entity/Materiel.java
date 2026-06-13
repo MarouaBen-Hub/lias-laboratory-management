@@ -3,19 +3,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.persistence.*;
-import lombok.*;
 
-import java.time.LocalDate;
-@Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity
-@Table(name = "materiel")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class Materiel {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
