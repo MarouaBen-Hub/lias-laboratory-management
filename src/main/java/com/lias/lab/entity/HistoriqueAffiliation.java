@@ -3,20 +3,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import jakarta.validation.constraints.NotBlank;
-import com.lias.lab.entity.enums.StatutMembre;
-import jakarta.persistence.*;
-import lombok.*;
-import java.time.LocalDate;
-@Entity
+
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@Entity
-@Table(name = "historique_affiliation")
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
