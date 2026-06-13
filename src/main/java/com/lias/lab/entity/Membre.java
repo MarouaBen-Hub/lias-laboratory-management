@@ -15,6 +15,11 @@ import jakarta.validation.constraints.NotBlank;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+    @Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Membre {
 
     @Id
