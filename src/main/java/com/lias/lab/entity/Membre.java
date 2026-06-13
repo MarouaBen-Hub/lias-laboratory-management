@@ -1,21 +1,9 @@
 package com.lias.lab.entity;
-import com.lias.lab.entity.enums.StatutMembre;
-import jakarta.persistence.*;
-import lombok.*;
-import java.time.LocalDate;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import jakarta.validation.constraints.NotBlank;
-@Entity
-@Table(name = "membres")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-    @Entity
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
