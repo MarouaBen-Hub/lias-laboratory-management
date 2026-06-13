@@ -8,7 +8,11 @@ import com.lias.lab.entity.enums.StatutDemande;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
-
+@Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "demande_adhesion")
 @Getter
