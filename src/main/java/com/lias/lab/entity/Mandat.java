@@ -1,5 +1,9 @@
 package com.lias.lab.entity;
-
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotBlank;
 import com.lias.lab.entity.enums.RoleMembre;
 import jakarta.persistence.*;
 import lombok.*;
